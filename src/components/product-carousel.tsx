@@ -19,31 +19,35 @@ export function ProductCarousel() {
   const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("/api/products")
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const data: Product[] = await response.json()
-        setProducts(data)
-      } catch (e: any) {
-        setError(e.message)
-      } finally {
-        setLoading(false)
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("/api/products")
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
+      const data: Product[] = await response.json()
+      setProducts(data)
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        setError(e.message)
+      } else {
+        setError("An unknown error occurred")
+      }
+    } finally {
+      setLoading(false)
     }
-
-    fetchProducts()
-  }, [])
-
-  if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading products...</div>
   }
 
-  if (error) {
-    return <div className="flex justify-center items-center h-64 text-red-500">Error: {error}</div>
-  }
+  fetchProducts()
+}, [])
+
+if (loading) {
+  return <div className="flex justify-center items-center h-64">Loading products...</div>
+}
+
+if (error) {
+  return <div className="flex justify-center items-center h-64 text-red-500">Error: {error}</div>
+}
   return (
      
         <div className="flex flex-col items-center justify-center p-10 bg-white ">
